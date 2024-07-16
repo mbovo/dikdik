@@ -1,0 +1,25 @@
+[tool.poetry]
+name = "dikdik"
+version = "0.1.0"
+description = "dikdik - Common utils library"
+authors = ["Manuel Bovo <manuel.bovo@gmail.com>"]
+readme = "README.md"
+license = "LGPL-3.0-or-later"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.2.2"
+pytest-cov = "^5.0.0"
+pytest-xdist = "^3.6.1"
+pylint = "^3.2.5"
+ruff = "^0.5.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.scripts]
+dikdik = "dikdik.cli:main"

@@ -1,0 +1,8 @@
+.devbox
+.venv
+*.pyc
+*.pyo
+.vscode
+.idea
+.DS_Store?
+.Trashes
