@@ -2,16 +2,26 @@
   "$schema": "https://raw.githubusercontent.com/jetify-com/devbox/0.10.7/.schema/devbox.schema.json",
   "packages": [
     "python3@3.11.9",
-    "poetry@1.8.3"
+    "poetry@1.8.3",
+    "pre-commit@latest"
   ],
   "shell": {
     "init_hook": [
-	    "source .venv/bin/activate",
+	    ". .venv/bin/activate",
       "poetry install"
     ],
     "scripts": {
       "test": [
-        "echo \"Error: no test specified\" && exit 1"
+        "task test"
+      ],
+      "check": [
+        "task check"
+      ],
+      "build": [
+        "task build"
+      ],
+      "publish": [
+        "task publish"
       ]
     }
   }
