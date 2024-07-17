@@ -14,7 +14,7 @@ jobs:
         uses: jetify-com/devbox-install-action@v0.11.0
 
       - name: Run arbitrary commands
-        run: devbox run check"
+        run: devbox run check
 
       - name: Run a script called test
         run: devbox run test
@@ -34,5 +34,5 @@ jobs:
         uses: jetify-com/devbox-install-action@v0.11.0
 
       - name: Run a script called test
-        run: devbox run -- task build
+        run: devbox run build
 

@@ -7,8 +7,7 @@
   ],
   "shell": {
     "init_hook": [
-	    "if [ $SHELL == '/bin/zsh' ]; then source .venv/bin/activate; fi",
-      "if [ $SHELL != '/bin/zsh' ]; then . .venv/bin/activate; fi",
+	    ". .venv/bin/activate",
       "poetry install"
     ],
     "scripts": {
@@ -17,6 +16,9 @@
       ],
       "check": [
         "task check"
+      ],
+      "build": [
+        "task build"
       ]
     }
   }
