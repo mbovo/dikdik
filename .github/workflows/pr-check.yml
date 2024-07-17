@@ -1,0 +1,38 @@
+name: Sanity Checks
+on:
+  pull_request:
+    types: [opened, edited, synchronize, reopened]
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: arduino/setup-task@v1
+
+      - name: Install devbox
+        uses: jetify-com/devbox-install-action@v0.11.0
+
+      - name: Run arbitrary commands
+        run: devbox run check"
+
+      - name: Run a script called test
+        run: devbox run test
+
+
+  build-test:
+    name: "Build wheel"
+    needs:
+      - checks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: arduino/setup-task@v1
+
+      - name: Install devbox
+        uses: jetify-com/devbox-install-action@v0.11.0
+
+      - name: Run a script called test
+        run: devbox run -- task build
+
