@@ -19,6 +19,9 @@
       ],
       "build": [
         "task build"
+      ],
+      "publish": [
+        "task publish"
       ]
     }
   }
