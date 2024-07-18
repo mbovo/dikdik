@@ -15,6 +15,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
+from typing import Callable
 from ruamel.yaml import YAML, CommentedMap
 import sys
 from re import Pattern
@@ -33,15 +34,49 @@ def dump_yaml(*args):
             yaml.dump(arg, sys.stdout)
 
 
-def deep_visit(d: CommentedMap, regexp: Pattern, parent: str) -> list[dict[str, str]]:
+def extract_regexp(items: dict, regexp: Pattern[str], d: CommentedMap, parent: str) -> list[dict[str, str]]:
+  '''
+  Extracts informations from CommentedMap on a regular expression pattern.
+
+  Args:
+    items (dict): The dictionary containing the comments to process
+    regexp (Pattern[str]): The regular expression pattern used to match and extract information from comments.
+    d (CommentedMap): The original CommentedMap object containing the comments and values.
+    parent (str): The parent key used to construct the path of the extracted information.
+
+  Returns:
+    list[dict[str, str]]: A list of dictionaries containing the extracted information.
+
+  '''
+  ret = []
+  for key, comments in items:
+    # Match the comment with the regex and extract the operation and parameters
+    if comments is None or len(comments) < 3 or comments[2] is None:
+      continue
+    groups = regexp.search(comments[2].value)
+    if groups is not None and len(groups.groups()) > 1:
+      retDict = {
+        'path': parent + "." + key,
+        'value': d[key]
+      }
+      retDict.update(groups.groupdict())
+      retDict['params'] = retDict['params'].strip().split(
+        ' ')  # split the parameters
+      ret.append(retDict)
+  return ret
+
+
+def deep_visit(d: CommentedMap, parent: str, regexp: Pattern[str], extract_fun: Callable) -> list[dict[str, str]]:
   """
   Recursively visits a nested dictionary and extracts sub-dictionaries that contain a specific comment.
 
   Args:
     d (CommentedMap): The nested dictionary to be visited (as returned from ruamel.yaml)
-    regexp (Pattern): The regular expression to be used to match the comment.
     parent (str): The parent path of the current dictionary (default is an empty string).
-
+    regexp (Pattern): The regular expression to be used to match the comment.
+    extract_fun (Callable): The function used to extract the information from the comment. Must have the following signature:
+      def extract_fun(items: dict, regexp: Pattern[str], d: CommentedMap, parent: str) -> list[dict[str, str]]:
+        pass
   Returns:
     list[dict[str, str]]: A list of dictionaries containing the extracted information.
       Each dictionary contains the following keys:
@@ -50,27 +85,26 @@ def deep_visit(d: CommentedMap, regexp: Pattern, parent: str) -> list[dict[str, 
       - The dictionary of any regexp match group found in the comment (if any)
   """
 
-  ret: list[dict] = []
-  for key, comments in d.ca.items.items():
+  def dv(d: CommentedMap, parent: str = "") -> list[dict[str, str]]:
 
-    # Match the comment with the regex and extract the operation and parameters
-    match = regexp.search(comments[2].value)
-    if match is not None and len(match.groups()) > 1:
+    ret: list[dict] = []
 
-      matchDict = match.groupdict()
+    items = extract_fun(d.ca.items.items(), regexp, d, parent)
+    if items is not None:
+      ret = ret + items
+    # Recursively visit sub-dictionaries and lists
 
-      ret.append(
-          {'path': parent + "." + key,
-           "value": d[key]}.update(matchDict)
-           )
+    for k, v in d.items():
+      if isinstance(v, dict):
+        inner = dv(v, parent + "." + k)  # type: ignore
+        if inner is not None and len(inner) > 0:
+          ret = ret + inner
+      elif isinstance(v, list):
+        for i in v:
+          if isinstance(i, dict):
+            inner = dv(i, parent + "." + k)  # type: ignore
+            if inner is not None and len(inner) > 0:
+              ret = ret + inner
+    return ret
 
-  # Recursively visit sub-dictionaries and lists
-
-  for k, v in d.items():
-    if isinstance(v, dict):
-      ret = ret + deep_visit(v, regexp, parent + "." + k)  # type: ignore
-    elif isinstance(v, list):
-      for i in v:
-        if isinstance(i, dict):
-          ret = ret + deep_visit(i, regexp, parent + "." + k)  # type: ignore
-  return ret
+  return dv(d, parent)
