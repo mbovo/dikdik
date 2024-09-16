@@ -178,7 +178,8 @@ class PowerDict():
     def from_env(self, prefix: str = ''):
         for key, value in os.environ.items():
             if key.startswith(prefix):
-                self._data[key] = value
+                nkey = key[len(prefix):]
+                self._data[nkey] = value
 
 
 def deep_merge(d1:dict, d2:dict)-> dict:
