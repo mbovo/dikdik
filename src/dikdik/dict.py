@@ -214,6 +214,19 @@ def set_nested(d: dict, keys: list[str], value: str) -> None:
   if keys[-1] is not None:
     d[keys[-1]] = value
 
+def set_path(d: dict, keys: str, value: str) -> None:
+    """
+    Sets a nested value in a dictionary based on a string of keys separated by dot.
+        eg: set_path(d, 'a.b.c', 1) is equivalent to set_nested(d, ['a', 'b', 'c'], 1) and sets d['a']['b']['c'] = 1
+    Args:
+        d (dict): The dictionary to modify.
+        keys (str): A string of keys representing the nested structure.
+        value (str): The value to set.
+    
+    Returns:
+        None
+    """
+    set_nested(d, keys.split('.'), value)
 
 def get_nested(d: dict, keys: list[str]) -> Any:
   """
@@ -230,3 +243,16 @@ def get_nested(d: dict, keys: list[str]) -> Any:
   for key in keys:
     p = p[key]
   return p
+
+def get_path(d: dict, keys: str) -> Any:
+  """
+  Gets a nested value in a dictionary based on a string of keys separated by dot.
+    eg: get_path(d, 'a.b.c') is equivalent to get_nested(d, ['a', 'b', 'c']) and returns d['a']['b']['c']
+  Args:
+    d (dict): The dictionary to search.
+    keys (str): A string of keys representing the nested structure.
+
+  Returns:
+    Any: The value found in the nested structure.
+  """
+  return get_nested(d, keys.split('.'))
