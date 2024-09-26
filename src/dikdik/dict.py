@@ -222,7 +222,7 @@ def set_path(d: dict, keys: str, value: str) -> None:
         d (dict): The dictionary to modify.
         keys (str): A string of keys representing the nested structure.
         value (str): The value to set.
-    
+
     Returns:
         None
     """
