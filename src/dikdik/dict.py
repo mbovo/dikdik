@@ -23,7 +23,7 @@ from io import TextIOWrapper
 from typing import Any, Union, Tuple
 from jsonschema import ValidationError, validate
 
-class PowerDict():
+class PowerDict(dict):
     '''
       Powerdict is an advanced dict class
     '''
@@ -51,14 +51,17 @@ class PowerDict():
     def __iter__(self):
         return iter(self._data)
 
-    def __contains__(self, key: str) -> bool:
-        return key in self._data
+    def __contains__(self, key: object) -> bool:
+        return self._data.__contains__(key)
 
     def __repr__(self) -> str:
         return repr(self._data)
 
     def __str__(self) -> str:
         return str(self._data)
+
+    def __eq__(self, value: object) -> bool:
+        return self._data.__eq__(value)
 
     def __copy__(self):
         inst = self.__class__.__new__(self.__class__)
@@ -181,6 +184,13 @@ class PowerDict():
                 nkey = key[len(prefix):]
                 self._data[nkey] = value
 
+    def from_dict(self, d: dict, merge: bool = False):
+        if merge:
+            d = deep_merge(self._data, d)
+        self.update(d)
+
+    def to_dict(self) -> dict:
+        return self._data
 
 def deep_merge(d1:dict, d2:dict)-> dict:
     """

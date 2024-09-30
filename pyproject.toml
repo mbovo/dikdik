@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "dikdik"
-version = "0.1.6"
+version = "0.1.7"
 description = "dikdik - Common utils library"
 authors = ["Manuel Bovo <manuel.bovo@gmail.com>"]
 readme = "README.md"
