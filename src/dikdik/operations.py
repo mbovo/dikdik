@@ -93,6 +93,23 @@ def op_env(**kwargs) -> Any:
   return os.getenv(params[0], value)
 
 
+def op_value(**kwargs) -> Any:
+  """
+    Change the value with the one given in the parameters
+
+    Args:
+      params (list): The new value to set
+  """
+  if 'params' in kwargs:
+    params = kwargs['params']
+    if len(params) == 0:
+      raise OperationError("No parameters provided for value() operation")
+    elif len(params) == 1:
+      return params[0]
+    else:
+      return ", ".join(params)
+  raise OperationError
+
 def generate_op_var(cfg: dict, root_key:str ='vars') -> Callable:
   """
     Configure the var() operation with passed configuration dictionary and an optional root key
