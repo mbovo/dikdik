@@ -20,7 +20,7 @@ select = [
     "F",  # pyflakes
     "C",  # flake8-comprehensions
 ]
-line-length = 172
+line-length = 180
 
 [tool.poetry.dependencies]
 python = "^3.11"
