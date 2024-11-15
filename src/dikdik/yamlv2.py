@@ -8,7 +8,6 @@ from loguru import logger
 ExtractFunction = Callable[[Any, CommentedMap |
                             CommentedSeq, CommentedMap | CommentedSeq], None]
 TransformerFunction = Callable[[str, Any, dict[str, Any]], Any]
-logger.add("dikdik", format="{time} {level} {message}", level="DEBUG")
 
 def operation_to_transformer(all_operations: dict[Any, Any]=operations.DEFAULT_OPERATIONS, op_name_field: str = "op", op_params_field: str = "params") -> TransformerFunction:
   """
