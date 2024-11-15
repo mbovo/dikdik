@@ -3,17 +3,19 @@ from ruamel.yaml import CommentedMap, CommentedSeq
 from typing import Callable, Any
 from re import Pattern
 from . import operations
+from loguru import logger
 
 ExtractFunction = Callable[[Any, CommentedMap |
                             CommentedSeq, CommentedMap | CommentedSeq], None]
 TransformerFunction = Callable[[str, Any, dict[str, Any]], Any]
-
+logger.add("dikdik", format="{time} {level} {message}", level="DEBUG")
 
 def operation_to_transformer(all_operations: dict[Any, Any]=operations.DEFAULT_OPERATIONS, op_name_field: str = "op", op_params_field: str = "params") -> TransformerFunction:
   """
     Mapp the operation name to the operation function and return a TransformerFunction that apply the operation function.
   """
   def generic_transformer(key: str, value: Any, groups: dict[str, Any]) -> Any:
+    logger.debug("", key=key, value=value, groups=groups)
     if op_name_field not in groups:
       return None
     if op_params_field not in groups:
@@ -22,9 +24,9 @@ def operation_to_transformer(all_operations: dict[Any, Any]=operations.DEFAULT_O
     op = groups[op_name_field]
     params = groups[op_params_field].strip().split(' ')  # split the parameters
 
-    if op not in all_operations:
-
+    if op in all_operations:
       # Call the specific operation function
+      logger.debug("Operation", op=op, params=params, value=value, path=key)
       try:
         trans = all_operations[op](params=params, value=value, path=key)
         return trans
@@ -65,6 +67,7 @@ def extract_comment_regexp(regexp: Pattern[str], transform: TransformerFunction 
           words = regexp.search(comments[2].value)
           if words is not None and len(words.groups()) > 1:
             # we have a match
+            logger.debug("Matched", key=key, value=src[key], groups=words.groupdict())
 
             # extract the regexp groups as dictionary of groupName: match
             groups.update(words.groupdict())
