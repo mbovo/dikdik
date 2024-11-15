@@ -135,9 +135,9 @@ def generate_op_var(cfg: dict, root_key:str ='vars') -> Callable:
     p = params[0]
     try:
       tpl = jinja2.Template(f"{{{{ {p} }}}}")
-      if 'vars' not in cfg:
-        return ""
-      return tpl.render(cfg['vars'])
+      if root_key not in cfg:
+        raise OperationVarUndefinedValue(f"Variable {root_key} is not defined in the configuration dict")
+      return tpl.render(cfg[root_key])
     except jinja2.exceptions.UndefinedError as e:
       raise OperationVarUndefinedValue(str(e))
     except KeyError as e:
